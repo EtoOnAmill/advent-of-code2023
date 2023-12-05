@@ -144,8 +144,8 @@ let
   val filtered = 
     List.filter 
     (fn {x, y, charsLenght} => 
-      (inrange x (sx - 1) (sx + 1) ) andalso
-      (inrange y (sy - 1) (sy + 1)))
+      (inrange sx (x - 1) (x + charsLenght) ) andalso
+      (inrange sy (y - 1) (y + 1)))
     nList;
   val symbol = String.sub(List.nth(lines, sy), sx);
 in if symbol = #"*" then filtered else [] end;
