@@ -39,27 +39,8 @@ LINKEDLIST* append(LINKEDLIST* last, void* data, size_t dataSize){
 	return ret;
 }
 
-void freeList(LINKEDLIST* list) {
-	free(list->data);
-	free(list);
-}
-// 0 = success
-// 1 = next is null
-int removeNext(LINKEDLIST* curr) {
-	if(curr->next){
-		LINKEDLIST* toFree = curr-> next;
-		curr->next = toFree->next;
-		freeList(toFree);
-		return 0;
-	} else {
-		return 1;
-	}
-}
-
-
-
 void printList(LINKEDLIST* list){
-	printf("%s§", list->data);
+	printf("%s§\n", list->data);
 	void* next = list->next;
 	if(next){printList(next);}
 	else {printf("\n");}
@@ -106,6 +87,58 @@ LINKEDLIST* splitStr(char* str, char delim) {
 
 	return curr;
 }
+
+LINKEDLIST* splitAtSubstring(char* str, char* delim) {                                                              
+	if(str[0] == '\0'){return NULL;}
+
+	int start = 0;
+	while(str[start]) {
+		int matches = 1;
+		int i;
+		for(i = 0; delim[i] != '\0'; i++){
+			if(str[start + i] != delim[i]){
+				matches = 0;
+				break;
+			}
+		}
+
+		if(matches){ start += i; }
+		else {break;}
+	}
+
+	if(str[start] == '\0') {return NULL;}
+	//printf("weeded trailing delim\n%s\n", str + start);
+
+	size_t elemLenght = 0;
+	int end = start;
+	while(str[end]) {
+		int matches = 1;
+		int i;
+		for(i = 0; delim[i] != '\0'; i++){
+			if(str[end + i] != delim[i]){
+				matches = 0;
+				break;
+			}
+		}
+
+		if(matches) {break;}
+		else { end++; elemLenght++; }
+	}
+
+	if(elemLenght == 0) {return NULL;}
+	//printf("Found end of word\n");
+
+	char* substr = substring(str, start, end);
+
+	LINKEDLIST* next = splitAtSubstring(str + end, delim);
+
+	LINKEDLIST* curr = newList(substr, elemLenght);
+	curr->next = next;
+	//printf("succsessfuly created curr node\n%p -- %s\n", next, curr->data); 
+	//if(next) { printf("succsessfuly created next node\n%p -- %s\n", next, next->data); }
+
+	return curr;
+}
 char* readfile(char *path) {
   FILE* f = fopen(path,  "r");
   // f invalid? fseek() fail?
@@ -137,6 +170,36 @@ char* readfile(char *path) {
 int intfromstr(char* str) {
 	int ret = 0;
 	int strLen = 0;
+	while(str[strLen]){ 
+		ret *= 10;
+		switch(str[strLen]){
+			case '9': 
+				ret += 1;
+			case '8': 
+				ret += 1;
+			case '7': 
+				ret += 1;
+			case '6': 
+				ret += 1;
+			case '5': 
+				ret += 1;
+			case '4': 
+				ret += 1;
+			case '3': 
+				ret += 1;
+			case '2': 
+				ret += 1;
+			case '1': 
+				ret += 1;
+			default: break;
+		}
+		strLen+=1;
+	}
+	return ret;
+}
+long longfromstr(char* str) {
+	long ret = 0;
+	long strLen = 0;
 	while(str[strLen]){ 
 		ret *= 10;
 		switch(str[strLen]){
