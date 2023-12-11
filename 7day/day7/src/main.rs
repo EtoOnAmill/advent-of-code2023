@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 use std::fs;
 use std::collections::HashMap;
 
-const CARDS:[char;13] = ['2','3','4','5','6','7','8','9','T','J','Q','K','A']; 
+const CARDS:[char;13] = ['J','2','3','4','5','6','7','8','9','T','Q','K','A']; 
 
 fn card_points(c:&char) -> usize{
     for (i, cc) in (1..).zip(CARDS.iter()){
@@ -33,8 +33,15 @@ impl HandType {
         let mut sorted = cards.iter().collect::<Vec<(&char,&usize)>>();
         //println!("{:?}",sorted);
 
+        // 6 - five of a kind
+        // 5 - four of a kind
+        // 4 - full house (triplet + pair)
+        // 3 - three of a kind
+        // 2 - two pairs
+        // 1 - one pair
+
         let mut hand_power:u8 = 0;
-        for (c,n) in sorted.into_iter().rev() {
+        for (c,n) in sorted {
             match n {
                 _ if *c == 'J' => {}
                 5 => {hand_power = 6},
@@ -50,13 +57,13 @@ impl HandType {
                 (0,5) => hand_power = 6,
                 (0,4) => hand_power = 6,
                 (1,3) => hand_power = 6, // 1 pair + 3J
-                (0,3) => hand_power = 5,
                 (3,2) => hand_power = 6, // 3 same + 2J
-                (1,2) => hand_power = 5, // 1 pair + 2J
-                (0,2) => hand_power = 3,
                 (5,1) => hand_power = 6, // 4 same + 1J
+                (0,3) => hand_power = 5,
+                (1,2) => hand_power = 5, // 1 pair + 2J
                 (3,1) => hand_power = 5, // 3 same + 1J
                 (2,1) => hand_power = 4, // 2 pairs + 1J
+                (0,2) => hand_power = 3,
                 (1,1) => hand_power = 3, // 1 pair + 1J
                 (0,1) => hand_power = 1,
                 _ => panic!("{} {}",hand_power,n)
@@ -94,7 +101,7 @@ impl PartialOrd for HandType {
 fn main() {
     let test = "32T3K 765\nT55J5 684\nKK677 28\nKTJJT 220\nQQQJA 483";
     let file = fs::read_to_string("/home/etonit/advent-of-code2023/7day/input").unwrap();
-    let mut lines:Vec<(HandType,usize)> = test
+    let mut lines:Vec<(HandType,usize)> = file
         .split("\n")
         .filter(|e| e != &"")
         .map(|e| {
